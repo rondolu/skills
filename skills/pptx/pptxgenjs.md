@@ -1,9 +1,169 @@
 # PptxGenJS Tutorial
 
+## Design System from Template (MANDATORY)
+
+When creating presentations with PptxGenJS, you **must** load the active design template YAML before writing any slide code. The YAML is the single source of truth for all visual decisions.
+
+**Default template**: `.github/skills/pptx/fetch_template_from_ppt.yaml`
+
+**Background-first template**: `.github/skills/pptx/fetch_template_with_backgrounds.yaml`
+
+Read that file first, then use the mappings below to translate its values into PptxGenJS code.
+
+### Color Values
+
+Map from `design_system.color_palette.primary_tones`, `neutral_tones`, and `accent_tones`:
+
+```javascript
+// ⚠️ NEVER use '#' prefix — PptxGenJS requires bare hex strings
+const COLORS = {
+  background:    "FFFFFF",  // Content background base
+  accent:        "38B06A",  // Brand Green
+  softGreen:     "D6F0E3",  // Soft Green
+  textPrimary:   "1A1A1A",  // Deep Charcoal
+  textSecondary: "4A4A4A",  // Dark Gray
+  surface:       "F5F5F5",  // Card background
+  border:        "E8E8E8",  // Card border/divider
+  warningOrange: "F75801",
+  yellow:        "F5C518",
+};
+```
+
+### Typography
+
+Map from `design_system.typography`:
+
+```javascript
+// Font: Microsoft JhengHei for ALL text — both Chinese and English
+// Weight: ALL text is Bold — the template defines no Regular or Light usage
+const FONT = "Microsoft JhengHei";
+
+// Size hierarchy from typography.hierarchy (minimum 14pt — never go below)
+const TEXT = {
+  kpi:          { fontSize: 52, bold: true,  color: COLORS.accent   },  // Agenda large numbers
+  slideTitle:   { fontSize: 40, bold: true,  color: COLORS.white    },  // Cover title / page labels
+  sectionTitle: { fontSize: 28, bold: true,  color: COLORS.white    },  // Chapter headers
+  cardTitle:    { fontSize: 20, bold: true,  color: COLORS.white    },  // Card / row titles
+  subtitle:     { fontSize: 16, bold: true,  color: COLORS.iceBlue  },  // Subtitle taglines
+  body:         { fontSize: 14, bold: true,  color: COLORS.iceBlue  },  // Body text on dark bg
+  annotation:   { fontSize: 14, bold: true,  color: COLORS.midGray  },  // Low-priority notes
+};
+```
+
+### Slide Setup
+
+Map from `design_system.layout_rules.slide_size` (960×540pt → `LAYOUT_16x9`):
+
+```javascript
+let pres = new pptxgen();
+pres.layout = 'LAYOUT_16x9';           // 10" × 5.625"
+
+// Background is template-driven: color or image by slide type
+slide.background = { color: COLORS.background };
+```
+
+### Template Backgrounds by Slide Type
+
+Use this when the active template defines separate cover/content background images:
+
+```javascript
+const COVER_BG = "assets/backgrounds/cover-background.png";
+const CONTENT_BG = "assets/backgrounds/content-background.png";
+
+function applyTemplateBackground(slide, slideIndex) {
+  const isCover = slideIndex === 0;
+  slide.background = { path: isCover ? COVER_BG : CONTENT_BG };
+}
+```
+
+### Recurring Decorators (template-optional)
+
+Map from `layout_rules.recurring_elements`. Some templates set this to an empty array.
+Only apply decorators when the active template defines them:
+
+```javascript
+function addRecurringDecorators(slide, chapterNum, recurringElements) {
+  if (!Array.isArray(recurringElements) || recurringElements.length === 0) {
+    return;
+  }
+
+  // 1. Top thin bar — h≈5pt (0.052")
+  slide.addShape(pres.shapes.RECTANGLE, {
+    x: 0, y: 0, w: 10, h: 0.052,
+    fill: { color: "0D1F33" }, line: { color: "0D1F33" }
+  });
+
+  // 2. Bottom three-part bar — y≈518pt (5.396"), h≈22pt (0.229"), 3 equal segments
+  const BY = 5.396, BH = 0.229;
+  slide.addShape(pres.shapes.RECTANGLE, { x: 0,    y: BY, w: 3.33, h: BH, fill: { color: "0B1826" }, line: { color: "0B1826" } });
+  slide.addShape(pres.shapes.RECTANGLE, { x: 3.33, y: BY, w: 3.34, h: BH, fill: { color: "0E2040" }, line: { color: "0E2040" } });
+  slide.addShape(pres.shapes.RECTANGLE, { x: 6.67, y: BY, w: 3.33, h: BH, fill: { color: "153060" }, line: { color: "153060" } });
+
+  // 3. Left vertical accent line — x=0, y≈5pt, h≈513pt, w≈6pt (0.063")
+  slide.addShape(pres.shapes.RECTANGLE, {
+    x: 0, y: 0.052, w: 0.063, h: 5.344,
+    fill: { color: COLORS.accent }, line: { color: COLORS.accent }
+  });
+
+  // 4. Page / section number label
+  if (chapterNum != null) {
+    slide.addText(String(chapterNum).padStart(2, '0'), {
+      x: 0.042, y: 0.146, w: 0.833, h: 0.729,
+      fontFace: FONT, fontSize: 40, bold: true, color: COLORS.accent, margin: 0
+    });
+  }
+}
+```
+
+### Coordinate Conversion
+
+The YAML uses **points (pt)** for all positions and sizes. Convert to PptxGenJS **inches**:
+
+```text
+inches = points / 96
+```
+
+Key reference values from `layout_rules`:
+
+| YAML (pt) | Inches | Usage |
+| --------- | ------ | ----- |
+| 960 × 540 | 10" × 5.625" | Slide size |
+| 310 | 3.23" | Left panel width |
+| 518 | 5.396" | Bottom bar top edge |
+| 30 | 0.31" | Content left start (after accent line) |
+| 5 | 0.052" | Top/left bar height/width |
+
+If you use `fetch_template_with_backgrounds.yaml`, recurring decorators are intentionally disabled and you should place content in the template safe area instead.
+
+---
+
 ## Setup & Basic Structure
+
+## Output Bundle (MANDATORY)
+
+Before writing any slide code, create a deck bundle folder named after the presentation file. Store the final PPTX at the root of that folder, and persist every external resource inside `assets/`.
+
+```text
+Quarterly-Review/
+  Quarterly-Review.pptx
+  assets/
+    charts/
+    icons/
+    images/
+```
+
+If an icon or chart is generated in code, write it to a real file inside `assets/` before embedding it into the slide. Do not leave presentation resources only in memory.
 
 ```javascript
 const pptxgen = require("pptxgenjs");
+const fs = require("fs");
+const path = require("path");
+
+const deckName = "Quarterly-Review";
+const bundleDir = path.join(process.cwd(), deckName);
+const assetsDir = path.join(bundleDir, "assets");
+
+fs.mkdirSync(assetsDir, { recursive: true });
 
 let pres = new pptxgen();
 pres.layout = 'LAYOUT_16x9';  // or 'LAYOUT_16x10', 'LAYOUT_4x3', 'LAYOUT_WIDE'
@@ -13,12 +173,13 @@ pres.title = 'Presentation Title';
 let slide = pres.addSlide();
 slide.addText("Hello World!", { x: 0.5, y: 0.5, fontSize: 36, color: "363636" });
 
-pres.writeFile({ fileName: "Presentation.pptx" });
+pres.writeFile({ fileName: path.join(bundleDir, `${deckName}.pptx`) });
 ```
 
 ## Layout Dimensions
 
 Slide dimensions (coordinates in inches):
+
 - `LAYOUT_16x9`: 10" × 5.625" (default)
 - `LAYOUT_16x10`: 10" × 6.25"
 - `LAYOUT_4x3`: 10" × 7.5"
@@ -120,7 +281,7 @@ slide.addShape(pres.shapes.RECTANGLE, {
 Shadow options:
 
 | Property | Type | Range | Notes |
-|----------|------|-------|-------|
+| -------- | ---- | ----- | ----- |
 | `type` | string | `"outer"`, `"inner"` | |
 | `color` | string | 6-char hex (e.g. `"000000"`) | No `#` prefix, no 8-char hex — see Common Pitfalls |
 | `blur` | number | 0-100 pt | |
@@ -224,12 +385,18 @@ async function iconToBase64Png(IconComponent, color, size = 256) {
 
 ```javascript
 const iconData = await iconToBase64Png(FaCheckCircle, "#4472C4", 256);
+const iconPath = path.join(assetsDir, "icons", "check-circle.png");
+
+fs.mkdirSync(path.dirname(iconPath), { recursive: true });
+fs.writeFileSync(iconPath, Buffer.from(iconData.split(",")[1], "base64"));
 
 slide.addImage({
   data: iconData,
   x: 1, y: 1, w: 0.5, h: 0.5  // Size in inches
 });
 ```
+
+Persisting the icon file keeps the deck reproducible and ensures the generated PPTX ships with every visual resource it used.
 
 **Note**: Use size 256 or higher for crisp icons. The size parameter controls the rasterization resolution, not the display size on the slide (which is set by `w` and `h` in inches).
 
@@ -238,6 +405,7 @@ slide.addImage({
 Install: `npm install -g react-icons react react-dom sharp`
 
 Popular icon sets in react-icons:
+
 - `react-icons/fa` - Font Awesome
 - `react-icons/md` - Material Design
 - `react-icons/hi` - Heroicons
@@ -339,6 +507,7 @@ slide.addChart(pres.charts.BAR, chartData, {
 ```
 
 **Key styling options:**
+
 - `chartColors: [...]` - hex colors for series/segments
 - `chartArea: { fill, border, roundedCorners }` - chart background
 - `catGridLine/valGridLine: { color, style, size }` - grid lines (`style: "none"` to hide)
@@ -367,47 +536,51 @@ titleSlide.addText("My Title", { placeholder: "title" });
 
 ⚠️ These issues cause file corruption, visual bugs, or broken output. Avoid them.
 
-1. **NEVER use "#" with hex colors** - causes file corruption
-   ```javascript
-   color: "FF0000"      // ✅ CORRECT
-   color: "#FF0000"     // ❌ WRONG
-   ```
+- **NEVER use "#" with hex colors** - causes file corruption
 
-2. **NEVER encode opacity in hex color strings** - 8-char colors (e.g., `"00000020"`) corrupt the file. Use the `opacity` property instead.
-   ```javascript
-   shadow: { type: "outer", blur: 6, offset: 2, color: "00000020" }          // ❌ CORRUPTS FILE
-   shadow: { type: "outer", blur: 6, offset: 2, color: "000000", opacity: 0.12 }  // ✅ CORRECT
-   ```
+  ```javascript
+  color: "FF0000"      // ✅ CORRECT
+  color: "#FF0000"     // ❌ WRONG
+  ```
 
-3. **Use `bullet: true`** - NEVER unicode symbols like "•" (creates double bullets)
+- **NEVER encode opacity in hex color strings** - 8-char colors (e.g., `"00000020"`) corrupt the file. Use the `opacity` property instead.
 
-4. **Use `breakLine: true`** between array items or text runs together
+  ```javascript
+  shadow: { type: "outer", blur: 6, offset: 2, color: "00000020" }          // ❌ CORRUPTS FILE
+  shadow: { type: "outer", blur: 6, offset: 2, color: "000000", opacity: 0.12 }  // ✅ CORRECT
+  ```
 
-5. **Avoid `lineSpacing` with bullets** - causes excessive gaps; use `paraSpaceAfter` instead
+- **Use `bullet: true`** - NEVER unicode symbols like "•" (creates double bullets)
 
-6. **Each presentation needs fresh instance** - don't reuse `pptxgen()` objects
+- **Use `breakLine: true`** between array items or text runs together
 
-7. **NEVER reuse option objects across calls** - PptxGenJS mutates objects in-place (e.g. converting shadow values to EMU). Sharing one object between multiple calls corrupts the second shape.
-   ```javascript
-   const shadow = { type: "outer", blur: 6, offset: 2, color: "000000", opacity: 0.15 };
-   slide.addShape(pres.shapes.RECTANGLE, { shadow, ... });  // ❌ second call gets already-converted values
-   slide.addShape(pres.shapes.RECTANGLE, { shadow, ... });
+- **Avoid `lineSpacing` with bullets** - causes excessive gaps; use `paraSpaceAfter` instead
 
-   const makeShadow = () => ({ type: "outer", blur: 6, offset: 2, color: "000000", opacity: 0.15 });
-   slide.addShape(pres.shapes.RECTANGLE, { shadow: makeShadow(), ... });  // ✅ fresh object each time
-   slide.addShape(pres.shapes.RECTANGLE, { shadow: makeShadow(), ... });
-   ```
+- **Each presentation needs fresh instance** - don't reuse `pptxgen()` objects
 
-8. **Don't use `ROUNDED_RECTANGLE` with accent borders** - rectangular overlay bars won't cover rounded corners. Use `RECTANGLE` instead.
-   ```javascript
-   // ❌ WRONG: Accent bar doesn't cover rounded corners
-   slide.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 1, y: 1, w: 3, h: 1.5, fill: { color: "FFFFFF" } });
-   slide.addShape(pres.shapes.RECTANGLE, { x: 1, y: 1, w: 0.08, h: 1.5, fill: { color: "0891B2" } });
+- **NEVER reuse option objects across calls** - PptxGenJS mutates objects in-place (e.g. converting shadow values to EMU). Sharing one object between multiple calls corrupts the second shape.
 
-   // ✅ CORRECT: Use RECTANGLE for clean alignment
-   slide.addShape(pres.shapes.RECTANGLE, { x: 1, y: 1, w: 3, h: 1.5, fill: { color: "FFFFFF" } });
-   slide.addShape(pres.shapes.RECTANGLE, { x: 1, y: 1, w: 0.08, h: 1.5, fill: { color: "0891B2" } });
-   ```
+  ```javascript
+  const shadow = { type: "outer", blur: 6, offset: 2, color: "000000", opacity: 0.15 };
+  slide.addShape(pres.shapes.RECTANGLE, { shadow, ... });  // ❌ second call gets already-converted values
+  slide.addShape(pres.shapes.RECTANGLE, { shadow, ... });
+
+  const makeShadow = () => ({ type: "outer", blur: 6, offset: 2, color: "000000", opacity: 0.15 });
+  slide.addShape(pres.shapes.RECTANGLE, { shadow: makeShadow(), ... });  // ✅ fresh object each time
+  slide.addShape(pres.shapes.RECTANGLE, { shadow: makeShadow(), ... });
+  ```
+
+- **Don't use `ROUNDED_RECTANGLE` with accent borders** - rectangular overlay bars won't cover rounded corners. Use `RECTANGLE` instead.
+
+  ```javascript
+  // ❌ WRONG: Accent bar doesn't cover rounded corners
+  slide.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 1, y: 1, w: 3, h: 1.5, fill: { color: "FFFFFF" } });
+  slide.addShape(pres.shapes.RECTANGLE, { x: 1, y: 1, w: 0.08, h: 1.5, fill: { color: "0891B2" } });
+
+  // ✅ CORRECT: Use RECTANGLE for clean alignment
+  slide.addShape(pres.shapes.RECTANGLE, { x: 1, y: 1, w: 3, h: 1.5, fill: { color: "FFFFFF" } });
+  slide.addShape(pres.shapes.RECTANGLE, { x: 1, y: 1, w: 0.08, h: 1.5, fill: { color: "0891B2" } });
+  ```
 
 ---
 

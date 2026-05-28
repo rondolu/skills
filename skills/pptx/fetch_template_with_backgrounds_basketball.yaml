@@ -1,0 +1,494 @@
+presentation_metadata:
+  topic: "Yahoo Fantasy Basketball — 2025 Draft Rankings"
+  風格: "背景圖導向、清新白底、明亮現代、層次分明、極簡科技"
+  archetype: "Dark + bold startup / data product launch（layout source only）"
+  核心概念: "保留 backgrounds 版本的背景資產、配色與字級階層，並將版面骨架全面替換為 Yahoo Fantasy Basketball 七頁式資料產品 layout。"
+  theme_concept: "Fresh Tech Minimal - Background-first + Data Product Layout"
+  aspect_ratio: "16:9"
+  language: "繁體中文（含少量英文技術詞彙）"
+  source_layout_rules: "Yahoo Fantasy Basketball Deck — Design System Extract"
+
+
+design_system:
+  background_assets:
+    cover: "assets/backgrounds/cover-background.png"
+    content: "assets/backgrounds/content-background.png"
+    fit: "cover"
+    content_safe_area:
+      x: "0.90 inches"
+      y: "0.45 inches"
+      w: "8.60 inches"
+      h: "4.60 inches"
+
+  color_palette:
+    rule: >
+      延用 fetch_template_with_backgrounds.yaml 的明亮白底色盤與背景圖配置。
+      即使新的 layout 來源來自深色 startup deck，本模板仍固定採用白底 + 翠綠主色（38B06A）+
+      黃色輔助（F5C518）+ 橙色警示（F75801）+ 灰階文字系統，不引入深色主背景作為主要視覺語言。
+
+    primary_tones:
+      - name: "Pure White（主背景）"
+        hex: "FFFFFF"
+        usage: "全版背景色，所有頁面的全幅底色"
+      - name: "Brand Green（品牌主色）"
+        hex: "38B06A"
+        usage: "章節編號大字、頁碼標籤、重要 icon、CTA 色塊，全報唯一高亮主色"
+      - name: "Soft Green（主色淺版）"
+        hex: "D6F0E3"
+        usage: "卡片頂部色條、淺色標籤背景、hover 狀態底色"
+
+    neutral_tones:
+      - name: "Deep Charcoal（主文字）"
+        hex: "1A1A1A"
+        usage: "主標題文字、各區塊標題、重要標籤文字"
+      - name: "Dark Gray（次要文字）"
+        hex: "4A4A4A"
+        usage: "副標題、補充說明文字、封面副文"
+      - name: "Mid Gray（輔助文字）"
+        hex: "7A7A7A"
+        usage: "小節標語、說明文字強調、側欄輔助標題"
+      - name: "Light Gray（一般正文）"
+        hex: "9E9E9E"
+        usage: "卡片內正文、說明段落文字（淺色卡片上）"
+      - name: "Pale Gray（次要說明）"
+        hex: "BDBDBD"
+        usage: "限制說明、補充條件文字（低重要性資訊）"
+      - name: "Surface Gray（卡片背景）"
+        hex: "F5F5F5"
+        usage: "內容卡片底色、分區區塊背景（帶 5% 灰調的白）"
+      - name: "Card Gray（卡片邊界）"
+        hex: "E8E8E8"
+        usage: "卡片外框線、分隔線、細線裝飾"
+      - name: "Panel Gray（側欄背景）"
+        hex: "EFEFEF"
+        usage: "左側導航欄背景（比主背景略深）"
+
+    accent_tones:
+      - name: "Accent Yellow（次要強調）"
+        hex: "F5C518"
+        usage: "次要標籤、提示區塊、次要規則標題色、輔助高亮"
+      - name: "Yellow Light（黃色淺版）"
+        hex: "FEF7D0"
+        usage: "黃色 tag 背景、淺色高亮底"
+      - name: "Warning Orange（錯誤/警示）"
+        hex: "F75801"
+        usage: "錯誤示範文字、警告標示、不符合狀態標示"
+      - name: "Gray 30%（低透明灰）"
+        hex: "B0B0B0"
+        alpha: "30%"
+        usage: "裝飾性幾何形狀、點矩陣圖案（低調輔助裝飾）"
+      - name: "Gray 15%（極淡灰）"
+        hex: "D4D4D4"
+        alpha: "15%"
+        usage: "背景層次分區、卡片陰影替代色（無陰影設計，用淺灰色塊製造層次）"
+      - name: "Green Dark（深綠強調）"
+        hex: "217A4A"
+        usage: "第三層架構節點標題、強調連結文字、深色對比"
+      - name: "Green Mid（中綠）"
+        hex: "2E9459"
+        usage: "第二層節點標題、次要技術標籤"
+      - name: "Tip Gray（提示說明）"
+        hex: "8C8C8C"
+        usage: "提示說明文字（💡 後的輔助文）"
+
+    gradients: null
+
+    visual_effects:
+      - "內容卡片仍以 F5F5F5 淺灰底 + E8E8E8 邊線定義層次，不使用陰影"
+      - "封面與結尾頁允許大型圓形/裁切幾何裝飾，但色彩需限制在既有白、綠、黃、灰系統"
+      - "排名、位置代碼、序號、技術縮寫可優先使用 mono 字型呈現資料產品感"
+      - "細分隔線與進度條維持極窄高度，用於次要資訊輔助"
+
+  typography:
+    display_font: "Arial"
+    mono_font: "Courier New"
+    chinese_fallback_font: "Microsoft JhengHei / 微軟正黑體"
+    size_policy: "保留 fetch_template_with_backgrounds.yaml 的字級階層；新 layout 規則只替換版面結構、區塊關係與定位。"
+
+    hierarchy:
+      slide_title:
+        size: "40pt"
+        weight: "Bold"
+        color: "1A1A1A"
+        note: "封面主標題／大頁首標題"
+
+      section_header:
+        size: "28-32pt"
+        weight: "Bold"
+        color: "1A1A1A"
+        note: "各章節頁大標題"
+
+      subtitle:
+        size: "15-16pt"
+        weight: "Bold"
+        color: "38B06A"
+        note: "標題下方說明行或 eyebrow 類標語"
+
+      body_text:
+        size: "14-16pt"
+        weight: "Bold"
+        line_height: "1.4（推估）"
+        color: "4A4A4A"
+        note: "主要段落說明文、表格內文、卡片內文"
+
+      annotation:
+        size: "14pt"
+        weight: "Bold"
+        color: "9E9E9E"
+        note: "最小說明、caption、輔助資訊"
+
+      kpi_value:
+        size: "52pt"
+        weight: "Bold"
+        color: "38B06A"
+        note: "大型 KPI、頁面序號或重點數字"
+
+    usage_mapping:
+      eyebrow: "subtitle 或 annotation"
+      hero_title: "slide_title"
+      section_title: "section_header"
+      mono_number: "kpi_value / body_text / annotation 依情境遞減"
+      card_title: "section_header 的縮小應用（建議 20-24pt 仍以該層級語意處理）"
+      card_body: "body_text"
+      caption: "annotation"
+
+  layout_rules:
+    slide_size:
+      width_inches: 10.0
+      height_inches: 5.625
+      source_canvas:
+        width_units: 1440
+        height_units: 810
+        note: "layout 規則引用 1440×810 設計稿座標，實作時需等比縮放到 10 × 5.625 inches。"
+
+    coordinate_mapping:
+      x_formula: "x_inches = x / 144"
+      y_formula: "y_inches = y / 144"
+      w_formula: "w_inches = w / 144"
+      h_formula: "h_inches = h / 144"
+      note: "因 1440:810 與 10:5.625 同為 16:9，可直接等比換算。"
+
+    safe_margins:
+      left: 75
+      right: 75
+      top: 75
+      bottom: 75
+
+    header_band:
+      eyebrow:
+        x: 75
+        y: 75
+        w: 1329
+        h: 28
+        size_token: "subtitle"
+      title:
+        x: 75
+        y: 124
+        w: 1329
+        h: 56
+        size_token: "section_header"
+
+    content_area:
+      x: 75
+      y: 216
+      w: 1290
+      h: 534
+      note: "header 下方保留 36pt gap；內容仍應優先落在 content background 的右側白色安全區。"
+
+    card_padding: "22-31pt"
+    card_gap: "17-21pt"
+
+    master_elements:
+      - desc: "每張投影片底層皆使用滿版背景圖或等效滿版矩形作為背景承載"
+      - desc: "Eyebrow 一律置於 y=75，使用 subtitle / annotation 尺度與 bold + UPPERCASE 語氣"
+      - desc: "Section title 一律置於 y=124，使用 section_header 尺度"
+      - desc: "封面與結尾頁可使用大尺寸裁切圓形疊加於畫布邊緣，但須服從既有配色"
+
+    recurring_elements: []
+
+  slide_templates:
+    - id: "cover"
+      role: "封面 / hero"
+      background: "assets/backgrounds/cover-background.png"
+      decorative:
+        - shape: "ellipse_or_circle"
+          position: { x: 915, y: -225, w: 675, h: 675 }
+        - shape: "ellipse_or_circle"
+          position: { x: -75, y: 622.5, w: 300, h: 300 }
+      content:
+        eyebrow:
+          y: 197
+          font: "Arial"
+          case: "UPPER"
+          weight: "Bold"
+          size_token: "subtitle"
+        hero_title:
+          y: 243
+          h: 171
+          font: "Arial"
+          weight: "Bold"
+          size_token: "slide_title"
+        subtitle:
+          y: 423
+          font: "Arial"
+          weight: "Bold"
+          size_token: "subtitle"
+        divider:
+          y: 557
+          w: 60
+          h: 3
+          color: "38B06A"
+        meta_row:
+          y: 596
+          font: "Courier New"
+          weight: "Bold"
+          size_token: "body_text"
+          separator: "·"
+          columns: 3
+
+    - id: "card_grid_5x2"
+      role: "5 欄 × 2 列方形卡片（類別總覽）"
+      background: "assets/backgrounds/content-background.png"
+      grid:
+        cols: 5
+        rows: 2
+        card: { w: 244, h: 258 }
+        gap_x: 17
+        gap_y: 18
+        first_card: { x: 75, y: 216 }
+      card_variants:
+        - "primary solid"
+        - "neutral"
+        - "highlight"
+      card_internal:
+        padding: 22
+        rank_chip:
+          y_offset: 24
+          h: 46
+          font: "Courier New"
+          weight: "Bold"
+          size_token: "kpi_value"
+          note: "必要時可縮到 28-40pt 範圍，但語意上歸類為 kpi_value"
+        title:
+          y_offset: 79
+          h: 28
+          font: "Arial"
+          weight: "Bold"
+          size_token: "body_text"
+        body:
+          y_offset: 116
+          h: 120
+          font: "Arial"
+          weight: "Bold"
+          size_token: "annotation"
+
+    - id: "numbered_steps_4panel"
+      role: "編號方法論（4 欄不等寬說明）"
+      background: "assets/backgrounds/content-background.png"
+      panels:
+        - { x: 75, w: 527, role: "primary_panel" }
+        - { x: 620, w: 180, role: "metric_narrow" }
+        - { x: 819, w: 191, role: "metric_narrow" }
+        - { x: 1027, w: 477, role: "secondary_panel" }
+      panel_height: 750
+      panel_internal:
+        padding: 31
+        big_number:
+          font: "Courier New"
+          weight: "Bold"
+          size_token: "kpi_value"
+        title:
+          font: "Arial"
+          weight: "Bold"
+          size_token: "section_header"
+        subtitle:
+          font: "Arial"
+          weight: "Bold"
+          size_token: "subtitle"
+        body:
+          font: "Arial"
+          weight: "Bold"
+          size_token: "body_text"
+        footer_chip:
+          y_from_top: 875
+          h: 63
+          size_token: "annotation"
+
+    - id: "ranked_list_two_column"
+      role: "Top 10 排行（左右兩欄各 5 列）"
+      background: "assets/backgrounds/content-background.png"
+      columns:
+        left: { x: 75, w: 636 }
+        right: { x: 729, w: 636 }
+      row:
+        h: 90
+        pitch: 102
+        first_y: 216
+      row_internal:
+        rank_box:
+          x_offset: 19
+          y_offset: 27
+          w: 39
+          h: 39
+          variant: "前 3 名高亮，其餘標準"
+          text:
+            font: "Courier New"
+            weight: "Bold"
+            size_token: "body_text"
+        player_name:
+          x_offset: 76
+          y_offset: 18
+          font: "Arial"
+          weight: "Bold"
+          size_token: "body_text"
+        team_pos:
+          x_offset: 76
+          y_offset: 46
+          font: "Courier New"
+          weight: "Bold"
+          size_token: "annotation"
+        z_score_chip:
+          x_right: 180
+          w: 156
+          font: "Arial"
+          weight: "Bold"
+          size_token: "body_text"
+        progress_bar:
+          track: { y_offset: 60, w: 150, h: 6 }
+          fill: { w: "114-150（proportional）", h: 6 }
+          label:
+            font: "Arial"
+            weight: "Bold"
+            size_token: "annotation"
+
+    - id: "position_4col_cards"
+      role: "4 個位置（PG / SG / SF / PF-C）球員推薦卡"
+      background: "assets/backgrounds/content-background.png"
+      grid:
+        cols: 4
+        card: { w: 307, h: 534 }
+        gap_x: 21
+        first_card: { x: 75, y: 216 }
+      card_internal:
+        padding: 28
+        pos_code:
+          y_offset: 30
+          h: 62
+          font: "Courier New"
+          weight: "Bold"
+          size_token: "kpi_value"
+          note: "位置碼可視寬度微縮，但維持數字級別的高辨識度"
+        pos_full:
+          y_offset: 95
+          h: 30
+          font: "Arial"
+          weight: "Bold"
+          size_token: "annotation"
+        player_lines:
+          line_h: 39
+          count: 5
+          font: "Arial"
+          weight: "Bold"
+          size_token: "body_text"
+        divider:
+          y_offset: 415
+          w: 251
+          h: 1
+        footer_note:
+          y_offset: 434
+          h: 72
+          font: "Arial"
+          weight: "Bold"
+          size_token: "annotation"
+      callout_card:
+        variant: "solid emphasis"
+
+    - id: "split_text_visual"
+      role: "左側雙堆疊文字 + 右側大型 visual / code 容器"
+      background: "assets/backgrounds/content-background.png"
+      left_column:
+        top_block: { x: 75, y: 216, w: 633, h: 242 }
+        bottom_block: { x: 75, y: 476, w: 633, h: 213 }
+        block_internal:
+          padding: 31
+          eyebrow:
+            font: "Arial"
+            weight: "Bold"
+            size_token: "subtitle"
+          title:
+            font: "Arial"
+            weight: "Bold"
+            size_token: "section_header"
+          body:
+            font: "Arial"
+            weight: "Bold"
+            size_token: "body_text"
+      right_visual:
+        outer: { x: 732, y: 216, w: 633, h: 545 }
+        inner: { x: 763, y: 301, w: 572, h: 429 }
+        font: "Courier New"
+        note: "右側容器可呈現 code、pipeline、資料流或大型 visual；外層卡片仍使用淺灰 / 白底體系。"
+
+    - id: "closing"
+      role: "結尾 CTA / 聯絡資訊"
+      background: "assets/backgrounds/content-background.png"
+      decorative:
+        - shape: "ellipse_or_circle"
+          position: { x: 1065, y: 435, w: 600, h: 600 }
+      content:
+        eyebrow:
+          y: 186
+          font: "Arial"
+          case: "UPPER"
+          weight: "Bold"
+          size_token: "subtitle"
+        hero_text:
+          y: 229
+          h: 153
+          font: "Arial"
+          weight: "Bold"
+          size_token: "slide_title"
+        body:
+          y: 397
+          h: 118
+          font: "Arial"
+          weight: "Bold"
+          size_token: "body_text"
+        stats_row:
+          y_value: 560
+          y_label: 614
+          value:
+            font: "Courier New"
+            weight: "Bold"
+            size_token: "kpi_value"
+          label:
+            font: "Arial"
+            weight: "Bold"
+            case: "UPPER"
+            size_token: "annotation"
+          columns:
+            - { x: 75, w: 167 }
+            - { x: 284, w: 205 }
+            - { x: 531, w: 121 }
+            - { x: 694, w: 148 }
+
+instructions_for_generation:
+  - "Background rule: 封面固定使用 assets/backgrounds/cover-background.png；其餘內容頁固定使用 assets/backgrounds/content-background.png。"
+  - "Color discipline: 嚴格沿用 backgrounds 版本色盤。主強調色為 38B06A，次強調色為 F5C518，警示色為 F75801，正文以 1A1A1A / 4A4A4A / 7A7A7A / 9E9E9E 分層。"
+  - "Font-size rule: 不採用來源 deck 的 84 / 75 / 60 等字級，所有字級回歸本模板保留的 slide_title / section_header / subtitle / body_text / annotation / kpi_value 六層。"
+  - "Font-family rule: 敘述性文字優先使用 Arial；數字、排名、編號、縮寫、技術標籤優先使用 Courier New；中文顯示不足時以 Microsoft JhengHei 作 fallback。"
+  - "Layout rule: 版面結構、欄數、卡片排列、panel 寬度、流程區塊與位置邏輯，全面依照 Yahoo Fantasy Basketball 七頁版型規則執行。"
+  - "Card style: 卡片仍必須用 F5F5F5 淺灰底 + 1pt E8E8E8 邊框界定；不得使用純白卡片貼白底。"
+  - "Visual tone: 雖然 layout 來源為 startup / data product 風格，但本模板不轉為深色主題；僅保留其幾何結構、ranked list、mono 標籤與資料產品感。"
+  - "Coordinate rule: 若程式實作使用 inches，請將 1440×810 座標依 x/144、y/144 等比換算至 10 × 5.625 inches。"
+  - "Forbidden elements: 不得引入原始深色 deck 的深藍大底、漸層、陰影、毛玻璃、超出既有色盤的高彩度新色。"
+
+principles:
+  - "雙字型系統：Arial 用於所有敘述性文字；Courier New 用於數字、編號、縮寫、技術標籤，以強化 data-product 氣質。"
+  - "Eyebrow 是品牌記號：置於 y=75，採 subtitle / annotation 尺度、Bold、Uppercase。"
+  - "封面與結尾頁可有大尺寸幾何裝飾，內頁則以卡片、清單、排行與 split layout 呈現資訊密度。"
+  - "前 3 名或重點項目可用高亮 variant，其餘維持標準 variant，形成資訊階層。"
+  - "卡片層次仍靠 fill + 邊線，而非陰影或重裝飾。"
+  - "Mono 視覺語言用於序號、位置碼、排名、meta row 與 stats row。"
+  - "進度條與細分隔線維持極窄高度，只承擔輔助資訊，不搶主視覺。"
+  - "文字最小仍不低於 14pt，確保投影與螢幕檢視可讀。"

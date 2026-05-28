@@ -7,6 +7,11 @@ description: Guide users through a structured workflow for co-authoring document
 
 This skill provides a structured workflow for guiding users through collaborative document creation. Act as an active guide, walking users through three stages: Context Gathering, Refinement & Structure, and Reader Testing.
 
+## Reference Materials
+
+- `examples/SASD_GoogleMaps_Geocoding.md` — Completed example of an SA/SD 系統分析與設計文件 (System Analysis & Design document) for a Google Maps Geocoding API integration on GCP. Demonstrates: chapter structure, API spec tables, processing logic, GCP resource tables, non-functional requirements, SQL appendices, glossary, and BigQuery DDL.
+- `templates/SASD_[GoogleMaps API]_[20260205]_v0.2_rc1_GoogleMaps_Geocoding.docx` — Original Word document template for the SA/SD format used by the Southeast Asia Data Team. Use as a formatting reference when producing .docx output for this document type.
+
 ## When to Offer This Workflow
 
 **Trigger conditions:**

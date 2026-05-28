@@ -1,0 +1,24 @@
+{
+  "deck": "Yahoo-Fantasy-Baseball-Analyzer-Editorial-Deck",
+  "template": "fetch_template_with_backgrounds_editorial.yaml",
+  "generated": "2026-05-25",
+  "slides": 7,
+  "sources": {
+    "html": "skills\\frontend-design\\yahoo-fantasy-baseball-analytics.html",
+    "yaml": "skills\\pptx\\fetch_template_with_backgrounds_editorial.yaml"
+  },
+  "resources": [
+    {
+      "type": "background",
+      "role": "cover",
+      "source": "skills\\pptx\\assets\\backgrounds\\cover-background.png",
+      "bundled_as": "assets/backgrounds/cover-background.png"
+    },
+    {
+      "type": "background",
+      "role": "content",
+      "source": "skills\\pptx\\assets\\backgrounds\\content-background.png",
+      "bundled_as": "assets/backgrounds/content-background.png"
+    }
+  ]
+}

@@ -5,13 +5,15 @@
 When using an existing presentation as a template:
 
 1. **Analyze existing slides**:
-   ```bash
-   python scripts/thumbnail.py template.pptx
-   python -m markitdown template.pptx
-   ```
-   Review `thumbnails.jpg` to see layouts, and markitdown output to see placeholder text.
 
-2. **Plan slide mapping**: For each content section, choose a template slide.
+  ```bash
+  python scripts/thumbnail.py template.pptx
+  python -m markitdown template.pptx
+  ```
+
+  Review `thumbnails.jpg` to see layouts, and markitdown output to see placeholder text.
+
+1. **Plan slide mapping**: For each content section, choose a template slide.
 
    ⚠️ **USE VARIED LAYOUTS** — monotonous presentations are a common failure mode. Don't default to basic title + bullet slides. Actively seek out:
    - Multi-column layouts (2-column, 3-column)
@@ -26,27 +28,29 @@ When using an existing presentation as a template:
 
    Match content type to layout style (e.g., key points → bullet slide, team info → multi-column, testimonials → quote slide).
 
-3. **Unpack**: `python scripts/office/unpack.py template.pptx unpacked/`
+1. **Unpack**: `python scripts/office/unpack.py template.pptx unpacked/`
 
-4. **Build presentation** (do this yourself, not with subagents):
+1. **Build presentation** (do this yourself, not with subagents):
    - Delete unwanted slides (remove from `<p:sldIdLst>`)
    - Duplicate slides you want to reuse (`add_slide.py`)
    - Reorder slides in `<p:sldIdLst>`
    - **Complete all structural changes before step 5**
 
-5. **Edit content**: Update text in each `slide{N}.xml`.
+1. **Edit content**: Update text in each `slide{N}.xml`.
    **Use subagents here if available** — slides are separate XML files, so subagents can edit in parallel.
 
-6. **Clean**: `python scripts/clean.py unpacked/`
+1. **Clean**: `python scripts/clean.py unpacked/`
 
-7. **Pack**: `python scripts/office/pack.py unpacked/ output.pptx --original template.pptx`
+1. **Pack**: `python scripts/office/pack.py unpacked/ DeckName.pptx --original template.pptx`
+  This writes the final deck to `DeckName/DeckName.pptx`.
+  PPT resources from `unpacked/ppt/` are copied to `DeckName/assets/`.
 
 ---
 
 ## Scripts
 
 | Script | Purpose |
-|--------|---------|
+| ------ | ------- |
 | `unpack.py` | Extract and pretty-print PPTX |
 | `add_slide.py` | Duplicate slide or create from layout |
 | `clean.py` | Remove orphaned files |
@@ -81,10 +85,10 @@ Removes slides not in `<p:sldIdLst>`, unreferenced media, orphaned rels.
 ### pack.py
 
 ```bash
-python scripts/office/pack.py unpacked/ output.pptx --original input.pptx
+python scripts/office/pack.py unpacked/ DeckName.pptx --original input.pptx
 ```
 
-Validates, repairs, condenses XML, re-encodes smart quotes.
+Validates, repairs, condenses XML, re-encodes smart quotes, and for PPTX writes the result to `DeckName/DeckName.pptx` with copied resources in `DeckName/assets/`.
 
 ### thumbnail.py
 
@@ -113,11 +117,13 @@ Slide order is in `ppt/presentation.xml` → `<p:sldIdLst>`.
 ## Editing Content
 
 **Subagents:** If available, use them here (after completing step 4). Each slide is a separate XML file, so subagents can edit in parallel. In your prompt to subagents, include:
+
 - The slide file path(s) to edit
 - **"Use the Edit tool for all changes"**
 - The formatting rules and common pitfalls below
 
 For each slide:
+
 1. Read the slide's XML
 2. Identify ALL placeholder content—text, images, charts, icons, captions
 3. Replace each placeholder with final content
@@ -140,11 +146,13 @@ For each slide:
 ### Template Adaptation
 
 When source content has fewer items than the template:
+
 - **Remove excess elements entirely** (images, shapes, text boxes), don't just clear text
 - Check for orphaned visuals after clearing text content
 - Run visual QA to catch mismatched counts
 
 When replacing text with different length content:
+
 - **Shorter replacements**: Usually safe
 - **Longer replacements**: May overflow or wrap unexpectedly
 - Test with visual QA after text changes
@@ -157,6 +165,7 @@ When replacing text with different length content:
 If source has multiple items (numbered lists, multiple sections), create separate `<a:p>` elements for each — **never concatenate into one string**.
 
 **❌ WRONG** — all items in one paragraph:
+
 ```xml
 <a:p>
   <a:r><a:rPr .../><a:t>Step 1: Do the first thing. Step 2: Do the second thing.</a:t></a:r>
@@ -164,6 +173,7 @@ If source has multiple items (numbered lists, multiple sections), create separat
 ```
 
 **✅ CORRECT** — separate paragraphs with bold headers:
+
 ```xml
 <a:p>
   <a:pPr algn="l"><a:lnSpc><a:spcPts val="3919"/></a:lnSpc></a:pPr>
@@ -193,7 +203,7 @@ Handled automatically by unpack/pack. But the Edit tool converts smart quotes to
 ```
 
 | Character | Name | Unicode | XML Entity |
-|-----------|------|---------|------------|
+| --------- | ---- | ------- | ---------- |
 | `“` | Left double quote | U+201C | `&#x201C;` |
 | `”` | Right double quote | U+201D | `&#x201D;` |
 | `‘` | Left single quote | U+2018 | `&#x2018;` |

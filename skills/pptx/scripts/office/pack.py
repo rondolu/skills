@@ -11,6 +11,7 @@ Examples:
 """
 
 import argparse
+import json
 import sys
 import shutil
 import tempfile
@@ -20,6 +21,69 @@ from pathlib import Path
 import defusedxml.minidom
 
 from validators import DOCXSchemaValidator, PPTXSchemaValidator, RedliningValidator
+
+
+PPTX_RESOURCE_DIRS = ["media", "embeddings", "charts", "diagrams", "drawings", "theme"]
+
+
+def _build_bundle_paths(output_path: Path) -> tuple[Path, Path, Path] | None:
+    if output_path.suffix.lower() != ".pptx":
+        return None
+
+    bundle_dir = output_path.with_suffix("")
+    deck_path = bundle_dir / output_path.name
+    assets_dir = bundle_dir / "assets"
+    return bundle_dir, deck_path, assets_dir
+
+
+def _collect_pptx_resources(input_dir: Path) -> list[dict[str, str]]:
+    ppt_dir = input_dir / "ppt"
+    if not ppt_dir.exists():
+        return []
+
+    resources: list[dict[str, str]] = []
+    for dir_name in PPTX_RESOURCE_DIRS:
+        resource_dir = ppt_dir / dir_name
+        if not resource_dir.exists():
+            continue
+
+        for file_path in sorted(resource_dir.rglob("*")):
+            if not file_path.is_file():
+                continue
+
+            relative_path = file_path.relative_to(ppt_dir).as_posix()
+            resources.append(
+                {
+                    "source": str(file_path),
+                    "relative_path": relative_path,
+                    "copied_to": f"assets/{relative_path}",
+                }
+            )
+
+    return resources
+
+
+def _copy_pptx_bundle_assets(input_dir: Path, assets_dir: Path) -> int:
+    resources = _collect_pptx_resources(input_dir)
+    assets_dir.mkdir(parents=True, exist_ok=True)
+
+    manifest = []
+    for resource in resources:
+        source_path = Path(resource["source"])
+        destination = assets_dir / resource["relative_path"]
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source_path, destination)
+        manifest.append(
+            {
+                "source": resource["relative_path"],
+                "copiedTo": resource["copied_to"],
+            }
+        )
+
+    (assets_dir / "resource-manifest.json").write_text(
+        json.dumps(manifest, indent=2), encoding="utf-8"
+    )
+    return len(manifest)
 
 def pack(
     input_directory: str,
@@ -31,6 +95,7 @@ def pack(
     input_dir = Path(input_directory)
     output_path = Path(output_file)
     suffix = output_path.suffix.lower()
+    bundle_paths = _build_bundle_paths(output_path)
 
     if not input_dir.is_dir():
         return None, f"Error: {input_dir} is not a directory"
@@ -49,6 +114,8 @@ def pack(
             if not success:
                 return None, f"Error: Validation failed for {input_dir}"
 
+    final_output_path = bundle_paths[1] if bundle_paths else output_path
+
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_content_dir = Path(temp_dir) / "content"
         shutil.copytree(input_dir, temp_content_dir)
@@ -57,11 +124,25 @@ def pack(
             for xml_file in temp_content_dir.rglob(pattern):
                 _condense_xml(xml_file)
 
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as zf:
+        final_output_path.parent.mkdir(parents=True, exist_ok=True)
+        with zipfile.ZipFile(final_output_path, "w", zipfile.ZIP_DEFLATED) as zf:
             for f in temp_content_dir.rglob("*"):
                 if f.is_file():
                     zf.write(f, f.relative_to(temp_content_dir))
+
+    if bundle_paths:
+        bundle_dir, _, assets_dir = bundle_paths
+        resource_count = _copy_pptx_bundle_assets(input_dir, assets_dir)
+        return (
+            None,
+            "\n".join(
+                [
+                    f"Successfully packed {input_dir} to {final_output_path}",
+                    f"Bundle folder: {bundle_dir}",
+                    f"Copied {resource_count} resource file(s) to {assets_dir}",
+                ]
+            ),
+        )
 
     return None, f"Successfully packed {input_dir} to {output_file}"
 
